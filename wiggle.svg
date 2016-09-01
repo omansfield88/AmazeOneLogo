@@ -1,0 +1,12 @@
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   width="400"
+   height="300"
+   version="1.1"
+   id="svg">
+  <path
+     d="M 123.3,141.2 C 143.8,22,311.6,83.4,311.6,145s-50,111.6-111.6,111.6S88.4,206.6,88.4,145S138.4,33.4,200,33.4"
+
+     id="wiggle"
+     class="weirdPath"/>
+</svg>
