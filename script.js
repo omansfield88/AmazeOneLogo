@@ -58,12 +58,12 @@ var path4b = frame.append("path")
 var path4c = frame.append("path")
                 .attr("d", rail4c); 
 
-function drawBalls(){
-    var ballsGroup = frame.append("g")
-                    .attr("class", "gooey")
-                    .attr("id", "ballsGroup")
-                    .attr("opacity", 0);
+var ballsGroup = frame.append("g")
+                .attr("class", "gooey")
+                .attr("id", "ballsGroup")
+                .attr("opacity", 0);
 
+function drawBalls(){
     var ballLightGreen = ballsGroup.append("circle")
                   .attr("r", 40)
                   .attr("fill", "#B3D45E") //Lighter Green
@@ -139,13 +139,14 @@ function drawPlaceholderBall(){
 //Start//////////////////////////////////////////////////////////////////////////////////////////////////////
 function start(){
     drawPlaceholderBall();
+    
     drawBalls();
+    
 
     frame.selectAll(".balls").transition()
                         .duration(500)
                         .attr("cx", 0)
                         .attr("cy", 0);
-
 
     var logoSlashStart = "243.694,202.666 228.249,229.413 228.316,229.529 243.771,202.798";
     var logoSlashEnd = "244.694,203.666 229.249,230.413 260.135,283.841 291.02,283.905";
@@ -180,13 +181,13 @@ function start(){
     setTimeout(function(){
         frame.selectAll("#ballsGroup")
                 .attr("opacity", 1);
-    }, 3050)
+    }, 3000)
 
     setTimeout(function(){
         spin();
     }, 3000)
 
-  //Animate out logo
+    //Animate out logo
     setTimeout(function(){
         logoSlash.transition()
                 .duration(500)
@@ -201,8 +202,6 @@ function start(){
                 .attr("opacity", 0);
                 
     }, 4000);
-
-
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -220,7 +219,6 @@ function spin(){
     //Reset the position of the balls so when they transition again, they're not effected by x and y pos. I think.
     // frame.selectAll(".balls").attr("cx", null)
     //                         .attr("cy", null);
-
 
 
     //Start spinning
@@ -242,9 +240,12 @@ function spin(){
     animate("#ballPink", path4c);
 
     //Repeat
-    // setTimeout(function(){
-    //     start();        
-    // }, 15000)
+    setTimeout(function(){
+        frame.selectAll("#ballsGroup")
+                .attr("opacity", 0);
+        start();        
+    }, 15000)
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -288,19 +289,26 @@ function spread(){
         animateBackToMiddle("#ballPink", 70);
     }, 3000);
 
+    //Remove the balls so they get redrawn without any transition or other position attributes edited.
     setTimeout(function(){
         frame.selectAll(".balls").remove();
     }, 3990)
 
+
+    //Hide balls so they dont appear in the top left, then restart the animation
     setTimeout(function(){
+        frame.selectAll("#ballsGroup")
+                .attr("opacity", 0);
         start();
     }, 4000)
 
 };
 
 //Spread all balls on hover
-frame.selectAll(".balls")
-                .on("mouseover", function(){
+// var pinkball = document.getElementById("ballPink");
+
+
+ballsGroup.on("mouseover", function(){
                     spread()
                     console.log("hovered")
                 })
