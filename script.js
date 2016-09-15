@@ -74,7 +74,7 @@ function drawBalls(){
                   .attr("r", 45)
                   .attr("fill", "#603C87") //Purple
                   .attr("id", "ballPurple")
-                  .attr("class", "balls");            
+                  .attr("class", "balls");
                   
     var ballRed = ballsGroup.append("circle")
                   .attr("r", 50)
@@ -98,7 +98,7 @@ function drawBalls(){
                   .attr("r", 65)
                   .attr("fill", "#2F639F") //Blue
                   .attr("id", "ballBlue")
-                  .attr("class", "balls");           
+                  .attr("class", "balls");
 
     var ballPink = ballsGroup.append("circle")
                   .attr("r", 70)
@@ -120,13 +120,9 @@ function drawPlaceholderBall(){
                   .attr("r", 72)
                   .attr("cx", 249)
                   .attr("cy", 251)
-                  .attr("fill", "red")
+                  .attr("fill", "#CF3574")
                   .attr("id", "placeholderBall");
 };
-
-
-
-
 
 
 
@@ -138,10 +134,19 @@ function drawPlaceholderBall(){
 
 //Start//////////////////////////////////////////////////////////////////////////////////////////////////////
 function start(){
-    drawPlaceholderBall();
     
+    console.log("started");
+    drawPlaceholderBall();    
     drawBalls();
-    
+
+    //Bind the hover function each time Start() runs.
+    //This is to avoid Start() being called over and over again when you hover the balls a few times
+    ballsGroup.on("mouseover", function(){
+                    spread();
+                    console.log("hovered");
+                    hovered = true;
+                    ballsGroup.on("mouseover", null); //Turn off hover so Start() only plays once.
+                })    
 
     frame.selectAll(".balls").transition()
                         .duration(500)
@@ -181,11 +186,10 @@ function start(){
     setTimeout(function(){
         frame.selectAll("#ballsGroup")
                 .attr("opacity", 1);
-    }, 3000)
-
-    setTimeout(function(){
         spin();
     }, 3000)
+
+
 
     //Animate out logo
     setTimeout(function(){
@@ -210,6 +214,7 @@ function start(){
 
 //Spin//////////////////////////////////////////////////////////////////////////////////////////////////////
 function spin(){
+    console.log("spinning")
     //Remove placeholder ball now that real balls are centered
     //Delay to make sure this happens after the ballGroup is unhidden
     setTimeout(function(){
@@ -228,7 +233,7 @@ function spin(){
             .duration(15000)
             .ease(d3.easePolyInOut)
             // .attr("transform", "translate(0,0)") //Reset the translate or it'll be X,Y + the translate
-            .attrTween("transform", translateAlong(rail.node()))
+            .attrTween("transform", translateAlong(rail.node()));
     }
 
     animate("#ballLightGreen", path3b);
@@ -237,16 +242,46 @@ function spin(){
     animate("#ballRed", path3);
     animate("#ballYellow", path4);
     animate("#ballPurple", path4b);
-    animate("#ballPink", path4c);
 
-    //Repeat
-    setTimeout(function(){
-        frame.selectAll("#ballsGroup")
-                .attr("opacity", 0);
-        start();        
-    }, 15000)
+    //Animate the pink ball seperately. This is so you can use .end() to track when the animation is finished.
+    //Works like a callback. If it was part of the function, it would get called once for each ball.
+    frame.selectAll("#ballPink")
+            .transition()
+            .duration(15000)
+            .ease(d3.easePolyInOut)
+            // .attr("transform", "translate(0,0)") //Reset the translate or it'll be X,Y + the translate
+            .attrTween("transform", translateAlong(path4c.node()))
+            
+            //Call start(); only when all animation is done. Interupting with spread(); wont break the sequence.
+            .on("end", function(){
+                console.log("DONE SON")
+                frame.selectAll(".balls").remove();
+                frame.selectAll("#ballsGroup")
+                    .attr("opacity", 0);         
+                start();
+            });
 
-}
+    // Repeat
+    // if(hovered){
+    //     console.log("Is hovered");
+    //     setTimeout(function(){
+    //         hovered = false;    //Reset
+    //         frame.selectAll("#ballsGroup")
+    //                 .attr("opacity", 0);
+    //         start(); 
+    //     }, 19000)
+    // }
+    // else{
+    //     console.log("Not hovered");
+    //      setTimeout(function(){
+    //         frame.selectAll("#ballsGroup")
+    //                 .attr("opacity", 0);
+    //         start();        
+    //     }, 15000)
+    // }
+
+
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -256,7 +291,7 @@ function spin(){
 function spread(){
     function animateToSpread(ballVar, cx, cy){
         frame.selectAll(ballVar).transition()
-                .duration(500)
+                .duration(3000)
                 .attr("transform", "translate(0,0)") //Reset the translate or it'll be X,Y + the translate
                 .attr("cx", cx)
                 .attr("cy", cy)
@@ -292,26 +327,18 @@ function spread(){
     //Remove the balls so they get redrawn without any transition or other position attributes edited.
     setTimeout(function(){
         frame.selectAll(".balls").remove();
-    }, 3990)
+    }, 3990);
 
 
     //Hide balls so they dont appear in the top left, then restart the animation
     setTimeout(function(){
+        console.log("spread finished")
         frame.selectAll("#ballsGroup")
                 .attr("opacity", 0);
         start();
     }, 4000)
 
 };
-
-//Spread all balls on hover
-// var pinkball = document.getElementById("ballPink");
-
-
-ballsGroup.on("mouseover", function(){
-                    spread()
-                    console.log("hovered")
-                })
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
