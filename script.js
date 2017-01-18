@@ -120,6 +120,8 @@ function drawPlaceholderBall(){
                   .attr("id", "placeholderBall");
 };
 
+
+//DRAW ICONS
 var iconGroup = frame.append("g")
                     .attr("id", "iconGroup")
                     .attr("opacity", 0);
@@ -404,7 +406,7 @@ function spread(){
 
     function animateBackToMiddle(ballVar, radius){
         frame.selectAll(ballVar).transition()
-                .duration(500)
+                .duration(1000)
                 .attr("cx", 250)
                 .attr("cy", 250)
                 .attr("r", radius);
